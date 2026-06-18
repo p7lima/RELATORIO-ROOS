@@ -1,16 +1,16 @@
 {
   "metrics": {
-    "total_spend": 8573.96,
-    "total_revenue": 18885.960000000003,
-    "roas": 2.2027114658804106,
-    "cpa": 428.698,
+    "total_spend": 8574.099999999999,
+    "total_revenue": 18885.96,
+    "roas": 2.2026754994693323,
+    "cpa": 428.7049999999999,
     "total_sales": 24.0,
     "paid_sales": 20.0,
     "organic_sales": 4,
-    "impressions": 139293.0,
+    "impressions": 139297.0,
     "clicks": 3931.0,
-    "ctr": 2.822108792258046,
-    "cpc": 2.1811142203001777
+    "ctr": 2.822027753648679,
+    "cpc": 2.181149834647672
   },
   "top_ads": [
     {

@@ -26,43 +26,25 @@ for _, row in ads.iterrows():
 # Sort top ads by revenue
 top_ads.sort(key=lambda x: x['revenue'], reverse=True)
 
-# Read 'mes' or 'brutos' to get total
-df_mes = pd.read_excel('data/DADOS-DO-MÊS-07-04-até-18-06.xlsx', header=2) # 2 is the actual header
-# Sum up the relevant columns
-total_spend = df_mes['Valor usado (BRL)'].sum()
-total_revenue = df_mes['Valor dos resultados'].sum()
-total_purchases_paid = df_mes['Resultados'].sum()
-total_impressions = df_mes['Impressões'].sum()
-total_clicks = df_mes['Cliques no link'].sum()
+# Read DIA-A-DIA to get global totals AND weekly data
+df_dia = pd.read_excel('data/DADOS-DE-DIA-A-DIA-07-04-até-18-06.xlsx', header=2)
+# drop rows where Dia is 'All' or nan
+df_dia = df_dia[df_dia['Dia'] != 'All'].dropna(subset=['Dia'])
+df_dia['Date'] = pd.to_datetime(df_dia['Dia'], errors='coerce')
+df_dia = df_dia.dropna(subset=['Date'])
+df_dia = df_dia.sort_values('Date')
 
-# Some columns might have string representations if mixed, convert to float
-total_spend = float(total_spend) if not pd.isna(total_spend) else 0
-total_revenue = float(total_revenue) if not pd.isna(total_revenue) else 0
-total_purchases_paid = float(total_purchases_paid) if not pd.isna(total_purchases_paid) else 0
-total_impressions = float(total_impressions) if not pd.isna(total_impressions) else 0
-total_clicks = float(total_clicks) if not pd.isna(total_clicks) else 0
+total_spend = pd.to_numeric(df_dia['Valor usado (BRL)'], errors='coerce').sum()
+total_revenue = pd.to_numeric(df_dia['Valor dos resultados'], errors='coerce').sum()
+total_purchases_paid = pd.to_numeric(df_dia['Resultados'], errors='coerce').sum()
+total_impressions = pd.to_numeric(df_dia['Impressões'], errors='coerce').sum()
+total_clicks = pd.to_numeric(df_dia['Cliques no link'], errors='coerce').sum()
 
-total_roas = total_revenue / total_spend if total_spend > 0 else 0
-cpa = total_spend / total_purchases_paid if total_purchases_paid > 0 else 0
-ctr = (total_clicks / total_impressions * 100) if total_impressions > 0 else 0
-cpc = total_spend / total_clicks if total_clicks > 0 else 0
-
-# Also check brutos for other campaigns not in 'mes' maybe?
-df_brutos = pd.read_excel('data/DADOS-BRUTOS-07-04-até-18-06.xlsx', header=2)
-# let's just add whatever is in brutos if it's not already in mes.
-# Actually, total_spend across all campaigns in brutos:
-total_spend_brutos = pd.to_numeric(df_brutos['Valor usado (BRL)'], errors='coerce').sum()
-total_revenue_brutos = pd.to_numeric(df_brutos['Valor dos resultados'], errors='coerce').sum()
-total_purchases_brutos = pd.to_numeric(df_brutos['Resultados'], errors='coerce').sum()
-total_impressions_brutos = pd.to_numeric(df_brutos['Impressões'], errors='coerce').sum()
-total_clicks_brutos = pd.to_numeric(df_brutos['Cliques no link'], errors='coerce').sum()
-
-# We'll use brutos since it has the whole raw data
-total_spend = total_spend_brutos
-total_revenue = total_revenue_brutos
-total_purchases_paid = total_purchases_brutos
-total_impressions = total_impressions_brutos
-total_clicks = total_clicks_brutos
+total_spend = float(total_spend) if not pd.isna(total_spend) else 0.0
+total_revenue = float(total_revenue) if not pd.isna(total_revenue) else 0.0
+total_purchases_paid = float(total_purchases_paid) if not pd.isna(total_purchases_paid) else 0.0
+total_impressions = float(total_impressions) if not pd.isna(total_impressions) else 0.0
+total_clicks = float(total_clicks) if not pd.isna(total_clicks) else 0.0
 
 total_roas = total_revenue / total_spend if total_spend > 0 else 0
 cpa = total_spend / total_purchases_paid if total_purchases_paid > 0 else 0
@@ -116,12 +98,6 @@ data = {
 }
 
 # --- WEEKLY DATA LOGIC ---
-df_dia = pd.read_excel('data/DADOS-DE-DIA-A-DIA-07-04-até-18-06.xlsx', header=2)
-# drop rows where Dia is 'All' or nan
-df_dia = df_dia[df_dia['Dia'] != 'All'].dropna(subset=['Dia'])
-df_dia['Date'] = pd.to_datetime(df_dia['Dia'], errors='coerce')
-df_dia = df_dia.dropna(subset=['Date'])
-df_dia = df_dia.sort_values('Date')
 
 # Group by 7 days starting from the first date
 min_date = df_dia['Date'].min()
