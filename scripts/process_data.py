@@ -7,9 +7,8 @@ def clean_float(val):
     try: return float(val)
     except: return 0
 
-# Read criativo file for ad performance
+# Read criativo file for ad performance (Global top ads - keep for now if needed, though we will have dynamic below)
 df_criativo = pd.read_excel('data/DADOS-DO-CRIATIVO-07-04-até-18-04.xlsx')
-# Filter actual ads (where 'Anúncios' is not 'All' and not NaN)
 ads = df_criativo[df_criativo['Anúncios'] != 'All'].dropna(subset=['Anúncios'])
 
 top_ads = []
@@ -22,17 +21,13 @@ for _, row in ads.iterrows():
         'roas': clean_float(row['ROAS de resultados']),
         'cpa': clean_float(row['Custo por resultado'])
     })
-
-# Sort top ads by revenue
 top_ads.sort(key=lambda x: x['revenue'], reverse=True)
 
-# Read DIA-A-DIA to get global totals AND weekly data
+# Read DIA-A-DIA to get global totals AND daily data
 df_dia = pd.read_excel('data/DADOS-DE-DIA-A-DIA-07-04-até-18-06.xlsx', header=2)
-# drop rows where Dia is 'All' or nan
 df_dia = df_dia[df_dia['Dia'] != 'All'].dropna(subset=['Dia'])
 df_dia['Date'] = pd.to_datetime(df_dia['Dia'], errors='coerce')
-df_dia = df_dia.dropna(subset=['Date'])
-df_dia = df_dia.sort_values('Date')
+df_dia = df_dia.dropna(subset=['Date']).sort_values('Date')
 
 total_spend = pd.to_numeric(df_dia['Valor usado (BRL)'], errors='coerce').sum()
 total_revenue = pd.to_numeric(df_dia['Valor dos resultados'], errors='coerce').sum()
@@ -51,29 +46,139 @@ cpa = total_spend / total_purchases_paid if total_purchases_paid > 0 else 0
 ctr = (total_clicks / total_impressions * 100) if total_impressions > 0 else 0
 cpc = total_spend / total_clicks if total_clicks > 0 else 0
 
-# Additional data provided by user
 organic_sales = 4
 total_sales = total_purchases_paid + organic_sales
 
-age_data = {
-    '18-24': 0,
-    '25-34': 1,
-    '35-44': 14,
-    '45-54': 4,
-    '55-64': 1
-}
-
+# Default global values (for region, which stays global)
 region_data = [
     {'name': 'São Paulo', 'value': 40},
     {'name': 'Pernambuco', 'value': 30},
     {'name': 'Rio de Janeiro', 'value': 30}
-] # we don't have exact numbers per region, just the names, so we'll mock the distribution or just show them.
+]
 
-placements_data = {
-    'Stories': 9,
-    'Feed': 8,
-    'Reels': 3
-}
+# Process Diario
+daily_data = []
+for date_val, group in df_dia.groupby(df_dia['Date'].dt.date):
+    inv = float(group['Valor usado (BRL)'].sum())
+    fat = float(group['Valor dos resultados'].sum())
+    ven = int(group['Resultados'].sum())
+    imp = int(group['Impressões'].sum())
+    cli = int(group['Cliques no link'].sum())
+    
+    roas = round(fat / inv, 2) if inv > 0 else 0
+    cpa = round(inv / ven, 2) if ven > 0 else 0
+    cpc = round(inv / cli, 2) if cli > 0 else 0
+    ctr = round((cli / imp) * 100, 2) if imp > 0 else 0
+    
+    daily_data.append({
+        'Data': date_val.strftime('%Y-%m-%d'),
+        'Investimento': inv,
+        'Faturamento': fat,
+        'Vendas': ven,
+        'Impressoes': imp,
+        'Cliques': cli,
+        'ROAS': roas,
+        'CPA': cpa,
+        'CPC': cpc,
+        'CTR': ctr
+    })
+
+# Process Idade Daily
+try:
+    df_idade = pd.read_excel('data/DIA-A-DIA-COM-IDADE.xlsx', skiprows=2)
+    idade_cols = df_idade.columns
+    i_ven = [c for c in idade_cols if 'Resultados' in str(c) and 'Tipo' not in str(c) and 'ROAS' not in str(c) and 'Custo' not in str(c) and c != 'Resultados (iniciais)']
+    col_vendas_idade = i_ven[0] if i_ven else 'Resultados'
+    
+    df_idade['Dia'] = df_idade['Dia'].ffill()
+    df_idade['Idade'] = df_idade['Idade'].ffill()
+    df_idade = df_idade[df_idade['Idade'].notna()]
+    df_idade = df_idade[~df_idade['Idade'].astype(str).str.contains('All|Total', case=False)]
+    df_idade['Dia_str'] = df_idade['Dia'].astype(str)
+    df_idade = df_idade[df_idade['Dia_str'].str.match(r'\d{4}-\d{2}-\d{2}', na=False)].copy()
+    
+    df_idade['Dia'] = pd.to_datetime(df_idade['Dia'])
+    df_idade[col_vendas_idade] = pd.to_numeric(df_idade[col_vendas_idade], errors='coerce').fillna(0)
+    
+    idade_agg = df_idade.groupby(['Dia', 'Idade'])[col_vendas_idade].sum().reset_index()
+    idade_diario = []
+    for _, row in idade_agg.iterrows():
+        idade_diario.append({
+            'Data': row['Dia'].strftime('%Y-%m-%d'),
+            'Idade': str(row['Idade']),
+            'Vendas': int(row[col_vendas_idade])
+        })
+except Exception as e:
+    print("Erro ao processar Idade:", e)
+    idade_diario = []
+
+# Process Posicionamento Daily
+try:
+    df_pos = pd.read_excel('data/POSICIONAMENTO DIA A DIA.xlsx', skiprows=2)
+    pos_cols = df_pos.columns
+    p_ven = [c for c in pos_cols if 'Resultados' in str(c) and 'Tipo' not in str(c) and 'ROAS' not in str(c) and 'Custo' not in str(c) and c != 'Resultados (iniciais)']
+    col_vendas_pos = p_ven[0] if p_ven else 'Resultados'
+    
+    df_pos['Dia'] = df_pos['Dia'].ffill()
+    df_pos = df_pos[df_pos['Posicionamento'].notna()]
+    df_pos = df_pos[~df_pos['Posicionamento'].astype(str).str.contains('All|Total', case=False)]
+    df_pos['Dia_str'] = df_pos['Dia'].astype(str)
+    df_pos = df_pos[df_pos['Dia_str'].str.match(r'\d{4}-\d{2}-\d{2}', na=False)].copy()
+    
+    df_pos['Dia'] = pd.to_datetime(df_pos['Dia'])
+    df_pos[col_vendas_pos] = pd.to_numeric(df_pos[col_vendas_pos], errors='coerce').fillna(0)
+    
+    pos_agg = df_pos.groupby(['Dia', 'Posicionamento'])[col_vendas_pos].sum().reset_index()
+    pos_diario = []
+    for _, row in pos_agg.iterrows():
+        pos_diario.append({
+            'Data': row['Dia'].strftime('%Y-%m-%d'),
+            'Posicionamento': str(row['Posicionamento']),
+            'Vendas': int(row[col_vendas_pos])
+        })
+except Exception as e:
+    print("Erro ao processar Posicionamentos:", e)
+    pos_diario = []
+
+# Process Criativo Daily
+try:
+    df_criativo_diario = pd.read_excel('data/CRIATIVO-DIA-A-DIA.xlsx')
+    criativo_diario_cols = df_criativo_diario.columns
+    
+    col_cria = [c for c in criativo_diario_cols if 'Anúncio' in str(c) or 'Anuncio' in str(c) or 'Anncio' in str(c)]
+    col_cria_name = col_cria[0] if col_cria else 'Anúncios'
+    
+    c_inv = [c for c in criativo_diario_cols if 'Valor usado' in str(c)]
+    col_c_inv = c_inv[0] if c_inv else 'Valor usado (BRL)'
+    
+    c_fat = [c for c in criativo_diario_cols if 'Valor dos resultados' in str(c)]
+    col_c_fat = c_fat[0] if c_fat else 'Valor dos resultados'
+    
+    c_ven = [c for c in criativo_diario_cols if 'Resultados' in str(c) and 'Tipo' not in str(c) and 'ROAS' not in str(c) and 'Custo' not in str(c) and c != 'Resultados (iniciais)']
+    col_c_ven = c_ven[0] if c_ven else 'Resultados'
+    
+    df_criativo_diario = df_criativo_diario[~df_criativo_diario[col_cria_name].astype(str).str.contains('All|Total', case=False)]
+    df_criativo_diario['Dia_str'] = df_criativo_diario['Dia'].astype(str)
+    df_criativo_diario = df_criativo_diario[df_criativo_diario['Dia_str'].str.match(r'\d{4}-\d{2}-\d{2}', na=False)].copy()
+    
+    df_criativo_diario['Dia'] = pd.to_datetime(df_criativo_diario['Dia'])
+    df_criativo_diario[col_c_inv] = pd.to_numeric(df_criativo_diario[col_c_inv], errors='coerce').fillna(0)
+    df_criativo_diario[col_c_fat] = pd.to_numeric(df_criativo_diario[col_c_fat], errors='coerce').fillna(0)
+    df_criativo_diario[col_c_ven] = pd.to_numeric(df_criativo_diario[col_c_ven], errors='coerce').fillna(0)
+    
+    cria_agg = df_criativo_diario.groupby(['Dia', col_cria_name])[[col_c_inv, col_c_fat, col_c_ven]].sum().reset_index()
+    criativos_diario = []
+    for _, row in cria_agg.iterrows():
+        criativos_diario.append({
+            'Data': row['Dia'].strftime('%Y-%m-%d'),
+            'Nome': str(row[col_cria_name]),
+            'Investimento': float(row[col_c_inv]),
+            'Faturamento': float(row[col_c_fat]),
+            'Vendas': int(row[col_c_ven])
+        })
+except Exception as e:
+    print("Erro ao processar Criativos Diario:", e)
+    criativos_diario = []
 
 data = {
     'metrics': {
@@ -89,58 +194,15 @@ data = {
         'ctr': float(ctr),
         'cpc': float(cpc)
     },
-    'top_ads': top_ads[:5], # Top 5
+    'top_ads': top_ads[:5], # Keep legacy as fallback
     'audience': {
-        'age': age_data,
         'region': region_data,
-        'placements': placements_data
-    }
+    },
+    'Diario': daily_data,
+    'IdadeDiario': idade_diario,
+    'PosicionamentoDiario': pos_diario,
+    'CriativoDiario': criativos_diario
 }
-
-# --- WEEKLY DATA LOGIC ---
-
-# Group by 7 days starting from the first date
-min_date = df_dia['Date'].min()
-df_dia['Days_Since_Start'] = (df_dia['Date'] - min_date).dt.days
-df_dia['Week'] = df_dia['Days_Since_Start'] // 7
-
-weekly_data = []
-for week, group in df_dia.groupby('Week'):
-    w_spend = pd.to_numeric(group['Valor usado (BRL)'], errors='coerce').sum()
-    w_rev = pd.to_numeric(group['Valor dos resultados'], errors='coerce').sum()
-    w_purch = pd.to_numeric(group['Resultados'], errors='coerce').sum()
-    w_imp = pd.to_numeric(group['Impressões'], errors='coerce').sum()
-    w_clicks = pd.to_numeric(group['Cliques no link'], errors='coerce').sum()
-    
-    w_spend = float(w_spend) if not pd.isna(w_spend) else 0.0
-    w_rev = float(w_rev) if not pd.isna(w_rev) else 0.0
-    w_purch = float(w_purch) if not pd.isna(w_purch) else 0.0
-    w_imp = float(w_imp) if not pd.isna(w_imp) else 0.0
-    w_clicks = float(w_clicks) if not pd.isna(w_clicks) else 0.0
-    
-    w_roas = float(w_rev / w_spend) if w_spend > 0 else 0.0
-    w_cpa = float(w_spend / w_purch) if w_purch > 0 else 0.0
-    
-    w_start = group['Date'].min().strftime('%d/%m')
-    w_end = group['Date'].max().strftime('%d/%m')
-    
-    weekly_data.append({
-        'label': f"Semana {week + 1} ({w_start} - {w_end})",
-        'metrics': {
-            'total_spend': w_spend,
-            'total_revenue': w_rev,
-            'roas': w_roas,
-            'cpa': w_cpa,
-            'total_sales': w_purch, # we don't have organic sales per week, so we only show paid sales or total paid
-            'paid_sales': w_purch,
-            'impressions': w_imp,
-            'clicks': w_clicks,
-            'ctr': float(w_clicks / w_imp * 100) if w_imp > 0 else 0.0,
-            'cpc': float(w_spend / w_clicks) if w_clicks > 0 else 0.0
-        }
-    })
-
-data['weekly'] = weekly_data
 
 with open('data.json', 'w', encoding='utf-8') as f:
     json.dump(data, f, ensure_ascii=False, indent=2)

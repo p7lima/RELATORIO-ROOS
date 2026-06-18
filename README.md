@@ -8,7 +8,7 @@ Todo o processo de leitura e cálculos das planilhas brutas é automatizado atra
 
 ## Como atualizar o Relatório (Semanal/Mensal)
 
-1. **Baixe as planilhas** atualizadas de anúncios e cole dentro da pasta `data/`.
+1. **Baixe as planilhas** atualizadas de anúncios (apenas **DIA-A-DIA** e **CRIATIVOS**) e cole dentro da pasta `data/`. Você pode apagar as planilhas de Mês e Brutos se quiser, não precisamos mais delas!
    - *Atenção: O `.gitignore` está configurado para não subir as planilhas para o GitHub, preservando os dados da cliente.*
 2. Dê **dois cliques** no arquivo `update.bat`.
    - Ele irá rodar os scripts (`scripts/process_data.py` e `scripts/generate_html.py`).

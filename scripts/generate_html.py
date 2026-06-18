@@ -117,16 +117,18 @@ html_content = f"""<!DOCTYPE html>
                 </p>
             </div>
             
-            <div class="glass-card px-4 py-3 flex items-center gap-4">
-                <div class="flex flex-col items-end">
-                    <label for="weekSelector" class="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">Período de Análise</label>
-                    <select id="weekSelector" class="bg-[#0B0F19] border border-white/10 text-white text-sm rounded-lg focus:ring-brand focus:border-brand block w-full p-2 outline-none cursor-pointer">
-                        <option value="global">Visão Global (Toda a Campanha)</option>
-"""
-for week in data['weekly']:
-    html_content += f"""                        <option value="{week['label']}">{week['label']}</option>
-"""
-html_content += f"""                    </select>
+            <div class="mt-4 md:mt-0 flex flex-row flex-wrap items-center gap-4">
+                <div class="flex items-center gap-2">
+                    <button onclick="setDateRange('month')" class="text-xs text-brand-light hover:text-white border border-brand/30 px-3 py-1.5 rounded-lg transition-colors">Este Mês</button>
+                    <button onclick="setDateRange('all')" class="text-xs text-brand-light hover:text-white border border-brand/30 px-3 py-1.5 rounded-lg transition-colors">Global</button>
+                </div>
+                <div class="glass-card px-3 py-2 flex items-center gap-2">
+                    <label class="text-xs text-slate-400 uppercase tracking-wider font-semibold">De:</label>
+                    <input type="date" id="dateStart" onchange="updateDashboard()" class="bg-[#0B0F19] border border-white/10 text-brand-light text-sm rounded-lg focus:ring-brand focus:border-brand p-1.5 outline-none cursor-pointer [color-scheme:dark]">
+                </div>
+                <div class="glass-card px-3 py-2 flex items-center gap-2">
+                    <label class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Até:</label>
+                    <input type="date" id="dateEnd" onchange="updateDashboard()" class="bg-[#0B0F19] border border-white/10 text-brand-light text-sm rounded-lg focus:ring-brand focus:border-brand p-1.5 outline-none cursor-pointer [color-scheme:dark]">
                 </div>
             </div>
         </header>
@@ -181,7 +183,6 @@ html_content += f"""                    </select>
                 <h3 id="val-sales" class="text-3xl font-bold text-white mb-2">{int(data['metrics']['total_sales'])}</h3>
                 <div class="flex items-center gap-2 text-sm">
                     <span id="val-paid-sales" class="px-2 py-0.5 rounded-md bg-brand/20 text-brand-light text-xs font-medium">{int(data['metrics']['paid_sales'])} Pagas</span>
-                    <span id="val-organic-sales" class="px-2 py-0.5 rounded-md bg-emerald-400/20 text-emerald-400 text-xs font-medium">{int(data['metrics']['organic_sales'])} Orgânicas</span>
                 </div>
             </div>
         </div>
@@ -192,7 +193,7 @@ html_content += f"""                    </select>
             <div class="glass-card p-6 lg:col-span-2">
                 <h3 class="text-lg font-semibold mb-6 flex items-center gap-2">
                     <i class="ph ph-users text-brand-light"></i>
-                    Vendas por Faixa Etária <span class="text-xs text-slate-500 font-normal ml-2">(Visão Global)</span>
+                    Vendas por Faixa Etária <span class="text-xs text-slate-500 font-normal ml-2">(Período Selecionado)</span>
                 </h3>
                 <div class="h-[300px] w-full relative">
                     <canvas id="ageChart"></canvas>
@@ -203,7 +204,7 @@ html_content += f"""                    </select>
             <div class="glass-card p-6">
                 <h3 class="text-lg font-semibold mb-6 flex items-center gap-2">
                     <i class="ph ph-device-mobile text-sky-400"></i>
-                    Posicionamentos <span class="text-xs text-slate-500 font-normal ml-2">(Visão Global)</span>
+                    Posicionamentos <span class="text-xs text-slate-500 font-normal ml-2">(Período Selecionado)</span>
                 </h3>
                 <div class="h-[300px] w-full relative flex justify-center">
                     <canvas id="placementChart"></canvas>
@@ -218,7 +219,7 @@ html_content += f"""                    </select>
                 <div class="p-6 border-b border-white/5">
                     <h3 class="text-lg font-semibold flex items-center gap-2">
                         <i class="ph ph-star text-amber-400"></i>
-                        Top 5 Anúncios <span class="text-xs text-slate-500 font-normal ml-2">(Visão Global)</span>
+                        Top 5 Anúncios <span class="text-xs text-slate-500 font-normal ml-2">(Período Selecionado)</span>
                     </h3>
                 </div>
                 <div class="overflow-x-auto">
@@ -232,20 +233,7 @@ html_content += f"""                    </select>
                                 <th class="px-6 py-4 font-medium text-right">ROAS</th>
                             </tr>
                         </thead>
-                        <tbody class="text-slate-300">
-"""
-for ad in data['top_ads']:
-    html_content += f"""
-                            <tr class="hover:bg-white/5 transition-colors">
-                                <td class="px-6 py-4 font-medium text-white truncate max-w-[200px]" title="{ad['name']}">{ad['name']}</td>
-                                <td class="px-6 py-4 text-right whitespace-nowrap">R$ {format_ptbr(ad['spend'])}</td>
-                                <td class="px-6 py-4 text-right"><span class="bg-brand/20 text-brand-light py-1 px-2 rounded-md font-medium">{int(ad['purchases'])}</span></td>
-                                <td class="px-6 py-4 text-right text-emerald-400 font-medium whitespace-nowrap">R$ {format_ptbr(ad['revenue'])}</td>
-                                <td class="px-6 py-4 text-right font-medium">{format_ptbr(ad['roas'])}x</td>
-                            </tr>
-"""
-
-html_content += f"""
+                        <tbody class="text-slate-300" id="topCreativesBody">
                         </tbody>
                     </table>
                 </div>
@@ -427,52 +415,201 @@ html_content += f"""
         Chart.defaults.font.family = "'Outfit', sans-serif";
         
         const rawData = {json.dumps(data)};
-        
+        let ageChartInst = null;
+        let placementChartInst = null;
+
         function formatPtBr(value, decimals=2) {{
             return value.toLocaleString('pt-BR', {{ minimumFractionDigits: decimals, maximumFractionDigits: decimals }});
         }}
 
-        document.getElementById('weekSelector').addEventListener('change', function(e) {{
-            const selected = e.target.value;
-            let m;
-            let organicText = "{int(data['metrics']['organic_sales'])} Orgânicas";
-            let totalSalesAdd = {int(data['metrics']['organic_sales'])};
-
-            if(selected === 'global') {{
-                m = rawData.metrics;
-            }} else {{
-                const wData = rawData.weekly.find(w => w.label === selected);
-                m = wData.metrics;
-                organicText = "Sem info (Orgânico)";
-                totalSalesAdd = 0;
+        function updateDashboard() {{
+            const startVal = document.getElementById('dateStart').value;
+            const endVal = document.getElementById('dateEnd').value;
+            
+            if (!startVal || !endVal) return;
+            
+            const startDate = new Date(startVal + 'T00:00:00');
+            const endDate = new Date(endVal + 'T23:59:59');
+            
+            let totalInv = 0;
+            let totalFat = 0;
+            let totalVen = 0;
+            let totalImp = 0;
+            let totalCli = 0;
+            
+            if (rawData.Diario) {{
+                rawData.Diario.forEach(dayData => {{
+                    const dayDate = new Date(dayData.Data + 'T12:00:00');
+                    if (dayDate >= startDate && dayDate <= endDate) {{
+                        totalInv += dayData.Investimento;
+                        totalFat += dayData.Faturamento;
+                        totalVen += dayData.Vendas;
+                        totalImp += dayData.Impressoes;
+                        totalCli += dayData.Cliques;
+                    }}
+                }});
+            }}
+            
+            let idadeDataMap = {{}};
+            let posDataMap = {{}};
+            
+            if (rawData.IdadeDiario) {{
+                rawData.IdadeDiario.forEach(dayData => {{
+                    const dayDate = new Date(dayData.Data + 'T12:00:00');
+                    if (dayDate >= startDate && dayDate <= endDate) {{
+                        idadeDataMap[dayData.Idade] = (idadeDataMap[dayData.Idade] || 0) + dayData.Vendas;
+                    }}
+                }});
+            }}
+            
+            if (rawData.PosicionamentoDiario) {{
+                rawData.PosicionamentoDiario.forEach(dayData => {{
+                    const dayDate = new Date(dayData.Data + 'T12:00:00');
+                    if (dayDate >= startDate && dayDate <= endDate) {{
+                        posDataMap[dayData.Posicionamento] = (posDataMap[dayData.Posicionamento] || 0) + dayData.Vendas;
+                    }}
+                }});
+            }}
+            
+            let criativosDataMap = {{}};
+            if (rawData.CriativoDiario) {{
+                rawData.CriativoDiario.forEach(dayData => {{
+                    const dayDate = new Date(dayData.Data + 'T12:00:00');
+                    if (dayDate >= startDate && dayDate <= endDate) {{
+                        if (!criativosDataMap[dayData.Nome]) {{
+                            criativosDataMap[dayData.Nome] = {{Faturamento: 0, Vendas: 0, Investimento: 0}};
+                        }}
+                        criativosDataMap[dayData.Nome].Faturamento += dayData.Faturamento;
+                        criativosDataMap[dayData.Nome].Vendas += dayData.Vendas;
+                        criativosDataMap[dayData.Nome].Investimento += dayData.Investimento;
+                    }}
+                }});
             }}
 
-            document.getElementById('val-spend').innerText = 'R$ ' + formatPtBr(m.total_spend);
-            document.getElementById('val-revenue').innerText = 'R$ ' + formatPtBr(m.total_revenue);
-            document.getElementById('val-roas').innerText = formatPtBr(m.roas) + 'x';
-            document.getElementById('val-cpa').innerText = 'R$ ' + formatPtBr(m.cpa);
-            document.getElementById('val-sales').innerText = Math.round(m.paid_sales + totalSalesAdd);
-            document.getElementById('val-paid-sales').innerText = Math.round(m.paid_sales) + ' Pagas';
-            document.getElementById('val-organic-sales').innerText = organicText;
-            document.getElementById('val-impressions').innerText = Math.round(m.impressions).toLocaleString('pt-BR');
-            document.getElementById('val-clicks').innerText = Math.round(m.clicks).toLocaleString('pt-BR');
-            document.getElementById('val-ctr').innerText = formatPtBr(m.ctr) + '%';
-            document.getElementById('val-cpc').innerText = 'R$ ' + formatPtBr(m.cpc);
-        }});
+            let criativosArray = Object.keys(criativosDataMap).map(nome => {{
+                const c = criativosDataMap[nome];
+                c.Nome = nome;
+                c.ROAS = c.Investimento > 0 ? c.Faturamento / c.Investimento : 0;
+                return c;
+            }});
+            
+            criativosArray.sort((a, b) => b.Vendas - a.Vendas);
+            const top5 = criativosArray.slice(0, 5);
+            
+            const tbody = document.getElementById('topCreativesBody');
+            if (tbody) {{
+                tbody.innerHTML = '';
+                top5.forEach((creative, i) => {{
+                    const highlightBg = i === 0 ? "bg-brand/10" : "";
+                    const medal = i === 0 ? "🥇 " : (i === 1 ? "🥈 " : (i === 2 ? "🥉 " : ""));
+                    
+                    const faturamentoStr = new Intl.NumberFormat('pt-BR', {{ style: 'currency', currency: 'BRL' }}).format(creative.Faturamento);
+                    const roasStr = creative.ROAS.toFixed(2).replace('.', ',') + 'x';
+                    
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-white/5 transition-colors ' + highlightBg;
+                    tr.innerHTML = `
+                        <td class="px-6 py-4 font-medium text-white truncate max-w-[200px]" title="${{creative.Nome}}">${{medal}}${{creative.Nome}}</td>
+                        <td class="px-6 py-4 text-right whitespace-nowrap">R$ ${{formatPtBr(creative.Investimento)}}</td>
+                        <td class="px-6 py-4 text-right"><span class="bg-brand/20 text-brand-light py-1 px-2 rounded-md font-medium">${{creative.Vendas}}</span></td>
+                        <td class="px-6 py-4 text-right text-emerald-400 font-medium whitespace-nowrap">${{faturamentoStr}}</td>
+                        <td class="px-6 py-4 text-right font-medium">${{roasStr}}</td>
+                    `;
+                    tbody.appendChild(tr);
+                }});
+            }}
+            
+            if (ageChartInst) {{
+                ageChartInst.data.labels = Object.keys(idadeDataMap);
+                ageChartInst.data.datasets[0].data = Object.values(idadeDataMap);
+                ageChartInst.update();
+            }}
+            
+            if (placementChartInst) {{
+                const filteredPosMap = Object.entries(posDataMap)
+                    .filter(([pos, val]) => val > 0)
+                    .sort((a, b) => b[1] - a[1]);
+                
+                let finalLabels = [];
+                let finalData = [];
+                
+                if (filteredPosMap.length > 5) {{
+                    finalLabels = filteredPosMap.slice(0, 5).map(e => e[0]);
+                    finalData = filteredPosMap.slice(0, 5).map(e => e[1]);
+                    const othersSum = filteredPosMap.slice(5).reduce((acc, curr) => acc + curr[1], 0);
+                    if (othersSum > 0) {{
+                        finalLabels.push('Outros');
+                        finalData.push(othersSum);
+                    }}
+                }} else {{
+                    finalLabels = filteredPosMap.map(e => e[0]);
+                    finalData = filteredPosMap.map(e => e[1]);
+                }}
+                
+                placementChartInst.data.labels = finalLabels;
+                placementChartInst.data.datasets[0].data = finalData;
+                
+                const pieColors = ['#8b5cf6', '#38bdf8', '#f472b6', '#a78bfa', '#0ea5e9', '#fb7185'];
+                placementChartInst.data.datasets[0].backgroundColor = finalLabels.map((_, i) => pieColors[i % pieColors.length]);
+                placementChartInst.update();
+            }}
+            
+            const roas = totalInv > 0 ? totalFat / totalInv : 0;
+            const cpa = totalVen > 0 ? totalInv / totalVen : 0;
+            const ctr = totalImp > 0 ? (totalCli / totalImp) * 100 : 0;
+            const cpc = totalCli > 0 ? totalInv / totalCli : 0;
+            
+            document.getElementById('val-spend').innerText = 'R$ ' + formatPtBr(totalInv);
+            document.getElementById('val-revenue').innerText = 'R$ ' + formatPtBr(totalFat);
+            document.getElementById('val-roas').innerText = formatPtBr(roas) + 'x';
+            document.getElementById('val-cpa').innerText = 'R$ ' + formatPtBr(cpa);
+            document.getElementById('val-sales').innerText = totalVen;
+            document.getElementById('val-paid-sales').innerText = totalVen + ' Pagas';
+            document.getElementById('val-impressions').innerText = Math.round(totalImp).toLocaleString('pt-BR');
+            document.getElementById('val-clicks').innerText = Math.round(totalCli).toLocaleString('pt-BR');
+            document.getElementById('val-ctr').innerText = formatPtBr(ctr) + '%';
+            document.getElementById('val-cpc').innerText = 'R$ ' + formatPtBr(cpc);
+        }}
 
-        // Age Chart
+        function setDateRange(type) {{
+            if (!rawData.Diario || rawData.Diario.length === 0) return;
+            const firstDate = rawData.Diario[0].Data;
+            const lastDate = rawData.Diario[rawData.Diario.length - 1].Data;
+            
+            if (type === 'all') {{
+                document.getElementById('dateStart').value = firstDate;
+                document.getElementById('dateEnd').value = lastDate;
+            }} else if (type === 'month') {{
+                const lastDateObj = new Date(lastDate + 'T12:00:00');
+                const year = lastDateObj.getFullYear();
+                const month = String(lastDateObj.getMonth() + 1).padStart(2, '0');
+                const startOfMonth = `${{year}}-${{month}}-01`;
+                const lastDay = new Date(year, lastDateObj.getMonth() + 1, 0).getDate();
+                const endOfMonth = `${{year}}-${{month}}-${{lastDay}}`;
+                
+                document.getElementById('dateStart').value = startOfMonth;
+                document.getElementById('dateEnd').value = endOfMonth;
+            }}
+            updateDashboard();
+        }}
+
+        if (rawData.Diario && rawData.Diario.length > 0) {{
+            document.getElementById('dateStart').value = rawData.Diario[0].Data;
+            document.getElementById('dateEnd').value = rawData.Diario[rawData.Diario.length - 1].Data;
+        }}
+
         const ageCtx = document.getElementById('ageChart').getContext('2d');
         const ageGradient = ageCtx.createLinearGradient(0, 0, 0, 400);
         ageGradient.addColorStop(0, 'rgba(139, 92, 246, 0.8)');
         ageGradient.addColorStop(1, 'rgba(139, 92, 246, 0.1)');
 
-        new Chart(ageCtx, {{
+        ageChartInst = new Chart(ageCtx, {{
             type: 'bar',
             data: {{
-                labels: Object.keys(rawData.audience.age),
+                labels: [],
                 datasets: [{{
                     label: 'Vendas por Idade',
-                    data: Object.values(rawData.audience.age),
+                    data: [],
                     backgroundColor: ageGradient,
                     borderColor: '#8b5cf6',
                     borderWidth: 1,
@@ -510,19 +647,14 @@ html_content += f"""
             }}
         }});
 
-        // Placements Chart
         const placementCtx = document.getElementById('placementChart').getContext('2d');
-        new Chart(placementCtx, {{
+        placementChartInst = new Chart(placementCtx, {{
             type: 'doughnut',
             data: {{
-                labels: Object.keys(rawData.audience.placements),
+                labels: [],
                 datasets: [{{
-                    data: Object.values(rawData.audience.placements),
-                    backgroundColor: [
-                        '#8b5cf6', // Stories - Purple
-                        '#38bdf8', // Feed - Sky
-                        '#f472b6'  // Reels - Pink
-                    ],
+                    data: [],
+                    backgroundColor: [],
                     borderWidth: 0,
                     hoverOffset: 4
                 }}]
@@ -548,6 +680,8 @@ html_content += f"""
                 }}
             }}
         }});
+
+        updateDashboard();
     </script>
 </body>
 </html>
