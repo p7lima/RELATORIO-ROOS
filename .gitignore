@@ -1,0 +1,12 @@
+# Ignorar todas as planilhas da pasta data por motivos de privacidade/seguranca
+data/*.xlsx
+data/*.csv
+
+# Ignorar o data.json caso voce queira gerar dinamicamente no deploy,
+# porem como Vercel vai usar a rota estatica, vamos MANTER o data.json e index.html
+# Entao data.json e index.html NAO ficam no gitignore.
+
+# Python cache
+__pycache__/
+*.pyc
+.env
