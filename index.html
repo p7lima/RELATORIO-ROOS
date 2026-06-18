@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Campanha | ROOS</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            DEFAULT: '#8b5cf6',
+                            dark: '#6d28d9',
+                            light: '#a78bfa',
+                        },
+                        dark: {
+                            bg: '#0B0F19',
+                            card: 'rgba(255, 255, 255, 0.03)',
+                            border: 'rgba(255, 255, 255, 0.08)'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        body {
+            background-color: #0B0F19;
+            color: #f8fafc;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.15), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(56, 189, 248, 0.15), transparent 25%);
+            background-attachment: fixed;
+        }
+        .glass-card {
+            background: rgba(20, 25, 40, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.5rem;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .metric-value {
+            background: linear-gradient(to right, #a78bfa, #38bdf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Table styling */
+        table {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        th {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        tr:not(:last-child) td {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .delay-100 { animation-delay: 100ms; }
+        .delay-200 { animation-delay: 200ms; }
+        .delay-300 { animation-delay: 300ms; }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 font-sans antialiased selection:bg-brand selection:text-white">
+
+    <div class="max-w-7xl mx-auto space-y-8">
+        
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 animate-fade-in">
+            <div>
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-brand to-sky-400 flex items-center justify-center shadow-lg shadow-brand/20">
+                        <i class="ph ph-chart-line-up text-2xl text-white"></i>
+                    </div>
+                    <h1 class="text-3xl md:text-4xl font-bold tracking-tight">Relatório de Desempenho</h1>
+                </div>
+                <p class="text-slate-400 flex items-center gap-2">
+                    <i class="ph ph-calendar-blank"></i>
+                    07 de Abril - 18 de Junho, 2026
+                </p>
+            </div>
+            
+            <div class="glass-card px-4 py-3 flex items-center gap-4">
+                <div class="flex flex-col items-end">
+                    <label for="weekSelector" class="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">Período de Análise</label>
+                    <select id="weekSelector" class="bg-[#0B0F19] border border-white/10 text-white text-sm rounded-lg focus:ring-brand focus:border-brand block w-full p-2 outline-none cursor-pointer">
+                        <option value="global">Visão Global (Toda a Campanha)</option>
+                        <option value="Semana 1 (07/04 - 13/04)">Semana 1 (07/04 - 13/04)</option>
+                        <option value="Semana 2 (14/04 - 20/04)">Semana 2 (14/04 - 20/04)</option>
+                        <option value="Semana 3 (21/04 - 27/04)">Semana 3 (21/04 - 27/04)</option>
+                        <option value="Semana 4 (28/04 - 02/05)">Semana 4 (28/04 - 02/05)</option>
+                        <option value="Semana 5 (06/05 - 11/05)">Semana 5 (06/05 - 11/05)</option>
+                        <option value="Semana 6 (12/05 - 18/05)">Semana 6 (12/05 - 18/05)</option>
+                        <option value="Semana 7 (19/05 - 25/05)">Semana 7 (19/05 - 25/05)</option>
+                        <option value="Semana 8 (26/05 - 01/06)">Semana 8 (26/05 - 01/06)</option>
+                        <option value="Semana 9 (02/06 - 08/06)">Semana 9 (02/06 - 08/06)</option>
+                        <option value="Semana 10 (09/06 - 15/06)">Semana 10 (09/06 - 15/06)</option>
+                        <option value="Semana 11 (16/06 - 18/06)">Semana 11 (16/06 - 18/06)</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+
+        <!-- Top Metrics -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 animate-fade-in delay-100">
+            <!-- Valor Investido -->
+            <div class="glass-card p-6 relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-brand/10 rounded-full blur-2xl group-hover:bg-brand/20 transition-all"></div>
+                <p class="text-slate-400 text-sm font-medium mb-1">Valor Investido</p>
+                <h3 id="val-spend" class="text-3xl font-bold text-white mb-2">R$ 8.573,96</h3>
+                <div class="flex items-center gap-2 text-sm">
+                    <span class="text-slate-500">Total gasto em anúncios</span>
+                </div>
+            </div>
+
+            <!-- Faturamento -->
+            <div class="glass-card p-6 relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-sky-400/10 rounded-full blur-2xl group-hover:bg-sky-400/20 transition-all"></div>
+                <p class="text-slate-400 text-sm font-medium mb-1">Faturamento Total</p>
+                <h3 id="val-revenue" class="text-3xl font-bold metric-value mb-2">R$ 18.885,96</h3>
+                <div class="flex items-center gap-2 text-sm">
+                    <i class="ph ph-trend-up text-emerald-400"></i>
+                    <span class="text-emerald-400 font-medium">Receita gerada</span>
+                </div>
+            </div>
+
+            <!-- ROAS -->
+            <div class="glass-card p-6 relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-emerald-400/10 rounded-full blur-2xl group-hover:bg-emerald-400/20 transition-all"></div>
+                <p class="text-slate-400 text-sm font-medium mb-1">ROAS Global</p>
+                <h3 id="val-roas" class="text-3xl font-bold text-white mb-2">2,20x</h3>
+                <div class="flex items-center gap-2 text-sm">
+                    <span class="text-slate-500">Retorno sobre investimento</span>
+                </div>
+            </div>
+
+            <!-- CPA -->
+            <div class="glass-card p-6 relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-amber-400/10 rounded-full blur-2xl group-hover:bg-amber-400/20 transition-all"></div>
+                <p class="text-slate-400 text-sm font-medium mb-1">Custo por Venda (CPA)</p>
+                <h3 id="val-cpa" class="text-3xl font-bold text-white mb-2">R$ 428,70</h3>
+                <div class="flex items-center gap-2 text-sm">
+                    <span class="text-slate-500">Média por aquisição</span>
+                </div>
+            </div>
+
+            <!-- Vendas Totais -->
+            <div class="glass-card p-6 relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-pink-400/10 rounded-full blur-2xl group-hover:bg-pink-400/20 transition-all"></div>
+                <p class="text-slate-400 text-sm font-medium mb-1">Vendas Totais</p>
+                <h3 id="val-sales" class="text-3xl font-bold text-white mb-2">24</h3>
+                <div class="flex items-center gap-2 text-sm">
+                    <span id="val-paid-sales" class="px-2 py-0.5 rounded-md bg-brand/20 text-brand-light text-xs font-medium">20 Pagas</span>
+                    <span id="val-organic-sales" class="px-2 py-0.5 rounded-md bg-emerald-400/20 text-emerald-400 text-xs font-medium">4 Orgânicas</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in delay-200">
+            <!-- Age Chart -->
+            <div class="glass-card p-6 lg:col-span-2">
+                <h3 class="text-lg font-semibold mb-6 flex items-center gap-2">
+                    <i class="ph ph-users text-brand-light"></i>
+                    Vendas por Faixa Etária <span class="text-xs text-slate-500 font-normal ml-2">(Visão Global)</span>
+                </h3>
+                <div class="h-[300px] w-full relative">
+                    <canvas id="ageChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Placements Chart -->
+            <div class="glass-card p-6">
+                <h3 class="text-lg font-semibold mb-6 flex items-center gap-2">
+                    <i class="ph ph-device-mobile text-sky-400"></i>
+                    Posicionamentos <span class="text-xs text-slate-500 font-normal ml-2">(Visão Global)</span>
+                </h3>
+                <div class="h-[300px] w-full relative flex justify-center">
+                    <canvas id="placementChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in delay-300">
+            <!-- Top Ads Table -->
+            <div class="glass-card p-0 lg:col-span-2 overflow-hidden">
+                <div class="p-6 border-b border-white/5">
+                    <h3 class="text-lg font-semibold flex items-center gap-2">
+                        <i class="ph ph-star text-amber-400"></i>
+                        Top 5 Anúncios <span class="text-xs text-slate-500 font-normal ml-2">(Visão Global)</span>
+                    </h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="text-slate-400 bg-white/5">
+                            <tr>
+                                <th class="px-6 py-4 font-medium">Anúncio</th>
+                                <th class="px-6 py-4 font-medium text-right">Gasto</th>
+                                <th class="px-6 py-4 font-medium text-right">Vendas</th>
+                                <th class="px-6 py-4 font-medium text-right">Receita</th>
+                                <th class="px-6 py-4 font-medium text-right">ROAS</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-slate-300">
+
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td class="px-6 py-4 font-medium text-white truncate max-w-[200px]" title="5 - Nem tudo que faz diferença é imediato.">5 - Nem tudo que faz diferença é imediato.</td>
+                                <td class="px-6 py-4 text-right whitespace-nowrap">R$ 2.072,37</td>
+                                <td class="px-6 py-4 text-right"><span class="bg-brand/20 text-brand-light py-1 px-2 rounded-md font-medium">5</span></td>
+                                <td class="px-6 py-4 text-right text-emerald-400 font-medium whitespace-nowrap">R$ 3.344,52</td>
+                                <td class="px-6 py-4 text-right font-medium">1,61x</td>
+                            </tr>
+
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td class="px-6 py-4 font-medium text-white truncate max-w-[200px]" title="2 - A ROOS utiliza um tecido inteligente para bioestimulação">2 - A ROOS utiliza um tecido inteligente para bioestimulação</td>
+                                <td class="px-6 py-4 text-right whitespace-nowrap">R$ 554,26</td>
+                                <td class="px-6 py-4 text-right"><span class="bg-brand/20 text-brand-light py-1 px-2 rounded-md font-medium">1</span></td>
+                                <td class="px-6 py-4 text-right text-emerald-400 font-medium whitespace-nowrap">R$ 2.919,70</td>
+                                <td class="px-6 py-4 text-right font-medium">5,27x</td>
+                            </tr>
+
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td class="px-6 py-4 font-medium text-white truncate max-w-[200px]" title="2 - A ROOS é diferente de tudo que você já vestiu. — Cópia; 3 -;">2 - A ROOS é diferente de tudo que você já vestiu. — Cópia; 3 -;</td>
+                                <td class="px-6 py-4 text-right whitespace-nowrap">R$ 554,33</td>
+                                <td class="px-6 py-4 text-right"><span class="bg-brand/20 text-brand-light py-1 px-2 rounded-md font-medium">3</span></td>
+                                <td class="px-6 py-4 text-right text-emerald-400 font-medium whitespace-nowrap">R$ 2.345,10</td>
+                                <td class="px-6 py-4 text-right font-medium">4,23x</td>
+                            </tr>
+
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td class="px-6 py-4 font-medium text-white truncate max-w-[200px]" title="1 - TESTE - 05/06 Ela veste. E sente a diferença.">1 - TESTE - 05/06 Ela veste. E sente a diferença.</td>
+                                <td class="px-6 py-4 text-right whitespace-nowrap">R$ 317,66</td>
+                                <td class="px-6 py-4 text-right"><span class="bg-brand/20 text-brand-light py-1 px-2 rounded-md font-medium">1</span></td>
+                                <td class="px-6 py-4 text-right text-emerald-400 font-medium whitespace-nowrap">R$ 1.700,72</td>
+                                <td class="px-6 py-4 text-right font-medium">5,35x</td>
+                            </tr>
+
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td class="px-6 py-4 font-medium text-white truncate max-w-[200px]" title="10 - O inverno chega com novas cores, novas possibilidades e a mesma essência ROOS:">10 - O inverno chega com novas cores, novas possibilidades e a mesma essência ROOS:</td>
+                                <td class="px-6 py-4 text-right whitespace-nowrap">R$ 90,10</td>
+                                <td class="px-6 py-4 text-right"><span class="bg-brand/20 text-brand-light py-1 px-2 rounded-md font-medium">1</span></td>
+                                <td class="px-6 py-4 text-right text-emerald-400 font-medium whitespace-nowrap">R$ 1.693,11</td>
+                                <td class="px-6 py-4 text-right font-medium">18,79x</td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Secondary Metrics -->
+            <div class="glass-card p-6 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-lg font-semibold mb-6 flex items-center gap-2">
+                        <i class="ph ph-target text-pink-400"></i>
+                        Métricas de Tráfego
+                    </h3>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="text-slate-400">Impressões Totais</span>
+                                <span id="val-impressions" class="text-white font-medium">139,293</span>
+                            </div>
+                            <div class="w-full bg-white/5 rounded-full h-2">
+                                <div class="bg-brand h-2 rounded-full" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="text-slate-400">Cliques no Link</span>
+                                <span id="val-clicks" class="text-white font-medium">3,931</span>
+                            </div>
+                            <div class="w-full bg-white/5 rounded-full h-2">
+                                <div class="bg-sky-400 h-2 rounded-full" style="width: 75%"></div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 pt-4 border-t border-white/5 mt-6">
+                            <div>
+                                <p class="text-xs text-slate-400 mb-1">CTR Médio</p>
+                                <p id="val-ctr" class="text-xl font-semibold text-white">2,82%</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-slate-400 mb-1">CPC Médio</p>
+                                <p id="val-cpc" class="text-xl font-semibold text-white">R$ 2,18</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8 p-4 rounded-xl bg-white/5 border border-white/10">
+                    <p class="text-xs text-slate-400 mb-2">Principais Regiões <span class="text-xs text-slate-500 font-normal ml-1">(Visão Global)</span></p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 rounded-full bg-slate-800 text-xs font-medium text-slate-300 border border-slate-700">São Paulo</span>
+                        <span class="px-3 py-1 rounded-full bg-slate-800 text-xs font-medium text-slate-300 border border-slate-700">Rio de Janeiro</span>
+                        <span class="px-3 py-1 rounded-full bg-slate-800 text-xs font-medium text-slate-300 border border-slate-700">Pernambuco</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer class="py-6 text-center text-sm text-slate-500">
+            Relatório gerado automaticamente • Dados atualizados em 18 de Junho de 2026
+        </footer>
+    </div>
+
+    <!-- Chart Config -->
+    <script>
+        // Set Chart.js defaults for dark theme
+        Chart.defaults.color = '#94a3b8';
+        Chart.defaults.font.family = "'Outfit', sans-serif";
+        
+        const rawData = {"metrics": {"total_spend": 8573.96, "total_revenue": 18885.960000000003, "roas": 2.2027114658804106, "cpa": 428.698, "total_sales": 24.0, "paid_sales": 20.0, "organic_sales": 4, "impressions": 139293.0, "clicks": 3931.0, "ctr": 2.822108792258046, "cpc": 2.1811142203001777}, "top_ads": [{"name": "5 - Nem tudo que faz diferen\u00e7a \u00e9 imediato.", "spend": 2072.37, "purchases": 5.0, "revenue": 3344.52, "roas": 1.61386239, "cpa": 414.474}, {"name": "2 - A ROOS utiliza um tecido inteligente para bioestimula\u00e7\u00e3o", "spend": 554.26, "purchases": 1.0, "revenue": 2919.7, "roas": 5.26774438, "cpa": 554.26}, {"name": "2 - A ROOS \u00e9 diferente de tudo que voc\u00ea j\u00e1 vestiu. \u2014 C\u00f3pia; 3 -;", "spend": 554.33, "purchases": 3.0, "revenue": 2345.1, "roas": 4.23051251, "cpa": 184.77666667}, {"name": "1 - TESTE - 05/06 Ela veste. E sente a diferen\u00e7a.", "spend": 317.66, "purchases": 1.0, "revenue": 1700.72, "roas": 5.3539004, "cpa": 317.66}, {"name": "10 - O inverno chega com novas cores, novas possibilidades e a mesma ess\u00eancia ROOS:", "spend": 90.1, "purchases": 1.0, "revenue": 1693.11, "roas": 18.79145394, "cpa": 90.1}], "audience": {"age": {"18-24": 0, "25-34": 1, "35-44": 14, "45-54": 4, "55-64": 1}, "region": [{"name": "S\u00e3o Paulo", "value": 40}, {"name": "Pernambuco", "value": 30}, {"name": "Rio de Janeiro", "value": 30}], "placements": {"Stories": 9, "Feed": 8, "Reels": 3}}, "weekly": [{"label": "Semana 1 (07/04 - 13/04)", "metrics": {"total_spend": 222.61, "total_revenue": 0.0, "roas": 0.0, "cpa": 0.0, "total_sales": 0.0, "paid_sales": 0.0, "impressions": 3037.0, "clicks": 123.0, "ctr": 4.05004939084623, "cpc": 1.809837398373984}}, {"label": "Semana 2 (14/04 - 20/04)", "metrics": {"total_spend": 275.5, "total_revenue": 1414.85, "roas": 5.13557168784029, "cpa": 275.5, "total_sales": 1.0, "paid_sales": 1.0, "impressions": 3857.0, "clicks": 78.0, "ctr": 2.022297122115634, "cpc": 3.532051282051282}}, {"label": "Semana 3 (21/04 - 27/04)", "metrics": {"total_spend": 250.12000000000003, "total_revenue": 0.0, "roas": 0.0, "cpa": 0.0, "total_sales": 0.0, "paid_sales": 0.0, "impressions": 4808.0, "clicks": 110.0, "ctr": 2.2878535773710484, "cpc": 2.273818181818182}}, {"label": "Semana 4 (28/04 - 02/05)", "metrics": {"total_spend": 20.29, "total_revenue": 0.0, "roas": 0.0, "cpa": 0.0, "total_sales": 0.0, "paid_sales": 0.0, "impressions": 511.0, "clicks": 7.0, "ctr": 1.36986301369863, "cpc": 2.8985714285714286}}, {"label": "Semana 5 (06/05 - 11/05)", "metrics": {"total_spend": 345.78, "total_revenue": 1891.97, "roas": 5.471600439585864, "cpa": 172.89, "total_sales": 2.0, "paid_sales": 2.0, "impressions": 6463.0, "clicks": 140.0, "ctr": 2.1661766981278046, "cpc": 2.4698571428571428}}, {"label": "Semana 6 (12/05 - 18/05)", "metrics": {"total_spend": 797.19, "total_revenue": 3346.84, "roas": 4.198296516514256, "cpa": 199.2975, "total_sales": 4.0, "paid_sales": 4.0, "impressions": 10309.0, "clicks": 237.0, "ctr": 2.2989620719759434, "cpc": 3.3636708860759494}}, {"label": "Semana 7 (19/05 - 25/05)", "metrics": {"total_spend": 776.75, "total_revenue": 522.39, "roas": 0.6725329900225298, "cpa": 776.75, "total_sales": 1.0, "paid_sales": 1.0, "impressions": 10315.0, "clicks": 278.0, "ctr": 2.6951042171594763, "cpc": 2.7940647482014387}}, {"label": "Semana 8 (26/05 - 01/06)", "metrics": {"total_spend": 1323.71, "total_revenue": 2856.02, "roas": 2.1575873869654227, "cpa": 264.742, "total_sales": 5.0, "paid_sales": 5.0, "impressions": 13132.0, "clicks": 418.0, "ctr": 3.1830642704843135, "cpc": 3.1667703349282297}}, {"label": "Semana 9 (02/06 - 08/06)", "metrics": {"total_spend": 1851.6100000000001, "total_revenue": 3184.12, "roas": 1.7196493862098388, "cpa": 617.2033333333334, "total_sales": 3.0, "paid_sales": 3.0, "impressions": 27707.0, "clicks": 842.0, "ctr": 3.0389432273432706, "cpc": 2.199061757719715}}, {"label": "Semana 10 (09/06 - 15/06)", "metrics": {"total_spend": 2156.3099999999995, "total_revenue": 3976.66, "roas": 1.844196799161531, "cpa": 718.7699999999999, "total_sales": 3.0, "paid_sales": 3.0, "impressions": 52393.0, "clicks": 1566.0, "ctr": 2.9889489053881246, "cpc": 1.3769540229885053}}, {"label": "Semana 11 (16/06 - 18/06)", "metrics": {"total_spend": 554.23, "total_revenue": 1693.11, "roas": 3.054886960287245, "cpa": 554.23, "total_sales": 1.0, "paid_sales": 1.0, "impressions": 6765.0, "clicks": 132.0, "ctr": 1.951219512195122, "cpc": 4.198712121212122}}]};
+        
+        function formatPtBr(value, decimals=2) {
+            return value.toLocaleString('pt-BR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+        }
+
+        document.getElementById('weekSelector').addEventListener('change', function(e) {
+            const selected = e.target.value;
+            let m;
+            let organicText = "4 Orgânicas";
+            let totalSalesAdd = 4;
+
+            if(selected === 'global') {
+                m = rawData.metrics;
+            } else {
+                const wData = rawData.weekly.find(w => w.label === selected);
+                m = wData.metrics;
+                organicText = "Sem info (Orgânico)";
+                totalSalesAdd = 0;
+            }
+
+            document.getElementById('val-spend').innerText = 'R$ ' + formatPtBr(m.total_spend);
+            document.getElementById('val-revenue').innerText = 'R$ ' + formatPtBr(m.total_revenue);
+            document.getElementById('val-roas').innerText = formatPtBr(m.roas) + 'x';
+            document.getElementById('val-cpa').innerText = 'R$ ' + formatPtBr(m.cpa);
+            document.getElementById('val-sales').innerText = Math.round(m.paid_sales + totalSalesAdd);
+            document.getElementById('val-paid-sales').innerText = Math.round(m.paid_sales) + ' Pagas';
+            document.getElementById('val-organic-sales').innerText = organicText;
+            document.getElementById('val-impressions').innerText = Math.round(m.impressions).toLocaleString('pt-BR');
+            document.getElementById('val-clicks').innerText = Math.round(m.clicks).toLocaleString('pt-BR');
+            document.getElementById('val-ctr').innerText = formatPtBr(m.ctr) + '%';
+            document.getElementById('val-cpc').innerText = 'R$ ' + formatPtBr(m.cpc);
+        });
+
+        // Age Chart
+        const ageCtx = document.getElementById('ageChart').getContext('2d');
+        const ageGradient = ageCtx.createLinearGradient(0, 0, 0, 400);
+        ageGradient.addColorStop(0, 'rgba(139, 92, 246, 0.8)');
+        ageGradient.addColorStop(1, 'rgba(139, 92, 246, 0.1)');
+
+        new Chart(ageCtx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(rawData.audience.age),
+                datasets: [{
+                    label: 'Vendas por Idade',
+                    data: Object.values(rawData.audience.age),
+                    backgroundColor: ageGradient,
+                    borderColor: '#8b5cf6',
+                    borderWidth: 1,
+                    borderRadius: 6,
+                    barPercentage: 0.6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        titleFont: { size: 14 },
+                        bodyFont: { size: 14 },
+                        padding: 12,
+                        cornerRadius: 8,
+                        displayColors: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)',
+                            drawBorder: false
+                        },
+                        ticks: { stepSize: 2 }
+                    },
+                    x: {
+                        grid: { display: false, drawBorder: false }
+                    }
+                }
+            }
+        });
+
+        // Placements Chart
+        const placementCtx = document.getElementById('placementChart').getContext('2d');
+        new Chart(placementCtx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(rawData.audience.placements),
+                datasets: [{
+                    data: Object.values(rawData.audience.placements),
+                    backgroundColor: [
+                        '#8b5cf6', // Stories - Purple
+                        '#38bdf8', // Feed - Sky
+                        '#f472b6'  // Reels - Pink
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        padding: 12,
+                        cornerRadius: 8
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
