@@ -304,7 +304,118 @@ html_content += f"""
             </div>
         </div>
         
-        <footer class="py-6 text-center text-sm text-slate-500">
+        <!-- Insights Section -->
+        <div class="mt-8 animate-fade-in delay-300">
+            <h3 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <i class="ph ph-lightbulb text-amber-400"></i>
+                Insights e Próximos Passos
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- O que funcionou -->
+                <div class="glass-card relative overflow-hidden flex flex-col h-full">
+                    <div class="absolute top-0 left-0 w-full h-1.5 bg-emerald-500"></div>
+                    <div class="p-6 flex-1">
+                        <h4 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                            <i class="ph ph-check-circle text-emerald-400"></i>
+                            O que funcionou
+                        </h4>
+                        <ul class="space-y-4 text-sm text-slate-300">
+                            <li class="flex items-start gap-2">
+                                <span class="text-emerald-400 mt-1">•</span>
+                                <span>Campanha paga positiva com ROAS geral de 2,20x.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-emerald-400 mt-1">•</span>
+                                <span>Remarketing validado: ROAS 3,95x e CPA saudável.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-emerald-400 mt-1">•</span>
+                                <span>Campanhas temáticas tiveram bons sinais, principalmente Dia das Mães e Namorados.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-emerald-400 mt-1">•</span>
+                                <span>Público comprador bem definido: 35-44 como faixa principal.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-emerald-400 mt-1">•</span>
+                                <span>Mensagens sobre tecnologia, diferença ao vestir e bioestimulação demonstraram força.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Gargalos -->
+                <div class="glass-card relative overflow-hidden flex flex-col h-full">
+                    <div class="absolute top-0 left-0 w-full h-1.5 bg-red-500"></div>
+                    <div class="p-6 flex-1">
+                        <h4 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                            <i class="ph ph-warning-circle text-red-400"></i>
+                            Onde está o gargalo
+                        </h4>
+                        <ul class="space-y-4 text-sm text-slate-300">
+                            <li class="flex items-start gap-2">
+                                <span class="text-red-400 mt-1">•</span>
+                                <span>345 carrinhos para 20 compras pagas: perda grande na finalização.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-red-400 mt-1">•</span>
+                                <span>Junho faturou mais, mas ficou com CPA maior.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-red-400 mt-1">•</span>
+                                <span>Conjunto aberto trouxe volume, porém com ROAS baixo.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-red-400 mt-1">•</span>
+                                <span>Reels teve menos compras do que Stories e Feed.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-red-400 mt-1">•</span>
+                                <span>Criativo campeão de volume precisa de variações para melhorar eficiência.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Próximas Ações -->
+                <div class="glass-card relative overflow-hidden flex flex-col h-full">
+                    <div class="absolute top-0 left-0 w-full h-1.5 bg-amber-500"></div>
+                    <div class="p-6 flex-1">
+                        <h4 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                            <i class="ph ph-arrow-right text-amber-400"></i>
+                            Próximas ações
+                        </h4>
+                        <ul class="space-y-4 text-sm text-slate-300">
+                            <li class="flex items-start gap-2">
+                                <span class="text-amber-400 mt-1">•</span>
+                                <span>Manter remarketing ativo e testar novas provas sociais/ofertas para quem abandonou carrinho.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-amber-400 mt-1">•</span>
+                                <span>Criar variações dos criativos vencedores com foco em tecnologia, resultado percebido e alto padrão.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-amber-400 mt-1">•</span>
+                                <span>Priorizar 35-54 anos nos testes principais, sem eliminar aprendizado aberto.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-amber-400 mt-1">•</span>
+                                <span>Revisar site/checkout: frete, prazo, formas de pagamento, Pix, parcelamento e confiança.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-amber-400 mt-1">•</span>
+                                <span>Separar campanha de escala e campanha de validação para não misturar leitura de criativo.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
+        <footer class="py-6 mt-8 border-t border-white/5 text-center text-sm text-slate-500">
             Relatório gerado automaticamente • Dados atualizados em 18 de Junho de 2026
         </footer>
     </div>
