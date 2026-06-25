@@ -85,7 +85,7 @@ for date_val, group in df_dia.groupby(df_dia['Date'].dt.date):
 
 # Process Idade Daily
 try:
-    df_idade = pd.read_excel('data/DIA-A-DIA-IDADE-un-1-2026-a-jun-25-2026.xlsx', skiprows=2)
+    df_idade = pd.read_excel('data/DIA-A-DIA-IDADE-01-06-até-18-06.xlsx', skiprows=2)
     idade_cols = df_idade.columns
     i_ven = [c for c in idade_cols if 'Resultados' in str(c) and 'Tipo' not in str(c) and 'ROAS' not in str(c) and 'Custo' not in str(c) and c != 'Resultados (iniciais)']
     col_vendas_idade = i_ven[0] if i_ven else 'Resultados'
@@ -114,7 +114,7 @@ except Exception as e:
 
 # Process Posicionamento Daily
 try:
-    df_pos = pd.read_excel('data/DIA-A-DIA-POSICIONAMENTO-jun-1-2026-a-jun-25-2026.xlsx', skiprows=2)
+    df_pos = pd.read_excel('data/DIA-A-DIA-POSICIONAMENTO-01-06-até-25-06.xlsx', skiprows=2)
     pos_cols = df_pos.columns
     p_ven = [c for c in pos_cols if 'Resultados' in str(c) and 'Tipo' not in str(c) and 'ROAS' not in str(c) and 'Custo' not in str(c) and c != 'Resultados (iniciais)']
     col_vendas_pos = p_ven[0] if p_ven else 'Resultados'

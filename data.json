@@ -991,7 +991,7 @@
     {
       "Data": "2026-06-25",
       "Idade": "35-44",
-      "Vendas": 0
+      "Vendas": 1
     },
     {
       "Data": "2026-06-25",
@@ -1978,7 +1978,7 @@
     {
       "Data": "2026-06-25",
       "Posicionamento": "Feed",
-      "Vendas": 0
+      "Vendas": 1
     },
     {
       "Data": "2026-06-25",
@@ -1998,6 +1998,16 @@
     {
       "Data": "2026-06-25",
       "Posicionamento": "Marketplace",
+      "Vendas": 0
+    },
+    {
+      "Data": "2026-06-25",
+      "Posicionamento": "Notificações do Facebook",
+      "Vendas": 0
+    },
+    {
+      "Data": "2026-06-25",
+      "Posicionamento": "Página inicial do Explorar",
       "Vendas": 0
     }
   ],
