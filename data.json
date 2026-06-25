@@ -1,16 +1,16 @@
 {
   "metrics": {
-    "total_spend": 2319.5800000000004,
-    "total_revenue": 6935.0199999999995,
-    "roas": 2.9897740108123014,
-    "cpa": 0.0,
-    "total_sales": 10.0,
-    "paid_sales": 6.0,
+    "total_spend": 2323.47,
+    "total_revenue": 7525.0199999999995,
+    "roas": 3.238699014835569,
+    "cpa": 65.94,
+    "total_sales": 11.0,
+    "paid_sales": 7.0,
     "organic_sales": 4,
-    "impressions": 25578.0,
+    "impressions": 25626.0,
     "clicks": 494.0,
-    "ctr": 2.08,
-    "cpc": 4.77
+    "ctr": 1.93,
+    "cpc": 5.07
   },
   "top_ads": [
     {
@@ -47,11 +47,11 @@
     },
     {
       "name": "10 - O inverno chega com novas cores, novas possibilidades e a mesma essência ROOS:",
-      "spend": 93.63,
+      "spend": 48.13,
       "purchases": 1.0,
-      "revenue": 553.0,
-      "roas": 5.90622664,
-      "cpa": 93.63
+      "revenue": 590.0,
+      "roas": 12.25846665,
+      "cpa": 48.13
     }
   ],
   "audience": {
@@ -361,15 +361,15 @@
     },
     {
       "Data": "2026-06-25",
-      "Investimento": 62.050000000000004,
-      "Faturamento": 0.0,
-      "Vendas": 0,
-      "Impressoes": 624,
+      "Investimento": 65.94,
+      "Faturamento": 590.0,
+      "Vendas": 1,
+      "Impressoes": 672,
       "Cliques": 13,
-      "ROAS": 0.0,
-      "CPA": 0,
-      "CPC": 4.77,
-      "CTR": 2.08
+      "ROAS": 8.95,
+      "CPA": 65.94,
+      "CPC": 5.07,
+      "CTR": 1.93
     }
   ],
   "IdadeDiario": [
@@ -2698,21 +2698,21 @@
     {
       "Data": "2026-06-25",
       "Nome": "1 - STORYS -",
-      "Investimento": 4.88,
+      "Investimento": 4.9,
       "Faturamento": 0.0,
       "Vendas": 0
     },
     {
       "Data": "2026-06-25",
       "Nome": "10 - O inverno chega com novas cores, novas possibilidades e a mesma essência ROOS:",
-      "Investimento": 44.81,
-      "Faturamento": 0.0,
-      "Vendas": 0
+      "Investimento": 48.13,
+      "Faturamento": 590.0,
+      "Vendas": 1
     },
     {
       "Data": "2026-06-25",
       "Nome": "2 - A ROOS utiliza um tecido inteligente para bioestimulação",
-      "Investimento": 11.53,
+      "Investimento": 12.89,
       "Faturamento": 0.0,
       "Vendas": 0
     }

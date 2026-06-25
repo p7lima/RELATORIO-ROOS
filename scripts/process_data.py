@@ -8,7 +8,7 @@ def clean_float(val):
     except: return 0
 
 # Read criativo file for ad performance (Global top ads - keep for now if needed, though we will have dynamic below)
-df_criativo = pd.read_excel('data/DIA-A-DIA-CRIATIVO-jun-1-2026-a-jun-25-2026.xlsx')
+df_criativo = pd.read_excel('data/DIA-A-DIA-CRIATIVO-01-06-até-25-06.xlsx')
 ads = df_criativo[df_criativo['Anúncios'] != 'All'].dropna(subset=['Anúncios'])
 
 top_ads = []
@@ -24,7 +24,7 @@ for _, row in ads.iterrows():
 top_ads.sort(key=lambda x: x['revenue'], reverse=True)
 
 # Read DIA-A-DIA to get global totals AND daily data
-df_dia = pd.read_excel('data/DIA-A-DIA-NORMALjun-1-2026-a-jun-25-2026.xlsx', header=2)
+df_dia = pd.read_excel('data/DIA-A-DIA-01-06-até-25-06.xlsx', header=2)
 df_dia = df_dia[df_dia['Dia'] != 'All'].dropna(subset=['Dia'])
 df_dia['Date'] = pd.to_datetime(df_dia['Dia'], errors='coerce')
 df_dia = df_dia.dropna(subset=['Date']).sort_values('Date')
@@ -142,7 +142,7 @@ except Exception as e:
 
 # Process Criativo Daily
 try:
-    df_criativo_diario = pd.read_excel('data/DIA-A-DIA-CRIATIVO-jun-1-2026-a-jun-25-2026.xlsx')
+    df_criativo_diario = pd.read_excel('data/DIA-A-DIA-CRIATIVO-01-06-até-25-06.xlsx')
     criativo_diario_cols = df_criativo_diario.columns
     
     col_cria = [c for c in criativo_diario_cols if 'Anúncio' in str(c) or 'Anuncio' in str(c) or 'Anncio' in str(c)]
