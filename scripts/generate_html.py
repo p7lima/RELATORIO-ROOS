@@ -113,7 +113,7 @@ html_content = f"""<!DOCTYPE html>
                 </div>
                 <p class="text-slate-400 flex items-center gap-2">
                     <i class="ph ph-calendar-blank"></i>
-                    07 de Abril - 18 de Junho, 2026
+                    01 de Junho - 25 de Junho, 2026
                 </p>
             </div>
             
@@ -312,23 +312,15 @@ html_content = f"""<!DOCTYPE html>
                         <ul class="space-y-4 text-sm text-slate-300">
                             <li class="flex items-start gap-2">
                                 <span class="text-emerald-400 mt-1">•</span>
-                                <span>Campanha paga positiva com ROAS geral de 2,20x.</span>
+                                <span>O faturamento global de Junho manteve um bom nível (ROAS geral do mês de 2,99x e receita de ~R$ 6.900).</span>
                             </li>
                             <li class="flex items-start gap-2">
                                 <span class="text-emerald-400 mt-1">•</span>
-                                <span>Remarketing validado: ROAS 3,95x e CPA saudável.</span>
+                                <span>O criativo focado no Inverno ("10 - O inverno chega...") dominou a conversão da semana 18-25, puxando R$ 1.666 em vendas com ROAS de 2,45x.</span>
                             </li>
                             <li class="flex items-start gap-2">
                                 <span class="text-emerald-400 mt-1">•</span>
-                                <span>Campanhas temáticas tiveram bons sinais, principalmente Dia das Mães e Namorados.</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <span class="text-emerald-400 mt-1">•</span>
-                                <span>Público comprador bem definido: 35-44 como faixa principal.</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <span class="text-emerald-400 mt-1">•</span>
-                                <span>Mensagens sobre tecnologia, diferença ao vestir e bioestimulação demonstraram força.</span>
+                                <span>A campanha de Remarketing continua mostrando que consegue cercar e converter os usuários que já conhecem a marca.</span>
                             </li>
                         </ul>
                     </div>
@@ -345,23 +337,15 @@ html_content = f"""<!DOCTYPE html>
                         <ul class="space-y-4 text-sm text-slate-300">
                             <li class="flex items-start gap-2">
                                 <span class="text-red-400 mt-1">•</span>
-                                <span>345 carrinhos para 20 compras pagas: perda grande na finalização.</span>
+                                <span>Houve forte desaceleração na performance entre os dias 18 e 25, onde a semana isolada fechou com ROAS de 1,46x.</span>
                             </li>
                             <li class="flex items-start gap-2">
                                 <span class="text-red-400 mt-1">•</span>
-                                <span>Junho faturou mais, mas ficou com CPA maior.</span>
+                                <span>A campanha de Vendas enfrentou dificuldade com os novos anúncios. Criativos como "Bioestimulação" e "i-Red" gastaram parte significativa da verba na última semana sem fechar vendas.</span>
                             </li>
                             <li class="flex items-start gap-2">
                                 <span class="text-red-400 mt-1">•</span>
-                                <span>Conjunto aberto trouxe volume, porém com ROAS baixo.</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <span class="text-red-400 mt-1">•</span>
-                                <span>Reels teve menos compras do que Stories e Feed.</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <span class="text-red-400 mt-1">•</span>
-                                <span>Criativo campeão de volume precisa de variações para melhorar eficiência.</span>
+                                <span>O custo por clique e CPA subiram consideravelmente nos dias finais, prejudicando a margem geral.</span>
                             </li>
                         </ul>
                     </div>
@@ -378,23 +362,19 @@ html_content = f"""<!DOCTYPE html>
                         <ul class="space-y-4 text-sm text-slate-300">
                             <li class="flex items-start gap-2">
                                 <span class="text-amber-400 mt-1">•</span>
-                                <span>Manter remarketing ativo e testar novas provas sociais/ofertas para quem abandonou carrinho.</span>
+                                <span>Desligar e/ou reduzir a verba dos anúncios de "Bioestimulação" e "i-Red" que não converteram na campanha de Vendas.</span>
                             </li>
                             <li class="flex items-start gap-2">
                                 <span class="text-amber-400 mt-1">•</span>
-                                <span>Criar variações dos criativos vencedores com foco em tecnologia, resultado percebido e alto padrão.</span>
+                                <span>Concentrar o esforço financeiro na narrativa de Inverno, escalando o anúncio "10" que já provou conversão.</span>
                             </li>
                             <li class="flex items-start gap-2">
                                 <span class="text-amber-400 mt-1">•</span>
-                                <span>Priorizar 35-54 anos nos testes principais, sem eliminar aprendizado aberto.</span>
+                                <span>Continuar apostando forte na campanha de Remarketing com as peças que deram certo, empurrando a recompra.</span>
                             </li>
                             <li class="flex items-start gap-2">
                                 <span class="text-amber-400 mt-1">•</span>
-                                <span>Revisar site/checkout: frete, prazo, formas de pagamento, Pix, parcelamento e confiança.</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <span class="text-amber-400 mt-1">•</span>
-                                <span>Separar campanha de escala e campanha de validação para não misturar leitura de criativo.</span>
+                                <span>Testar novas angulações sobre a coleção de inverno nas campanhas de captação (topo de funil).</span>
                             </li>
                         </ul>
                     </div>
@@ -404,7 +384,7 @@ html_content = f"""<!DOCTYPE html>
         </div>
         
         <footer class="py-6 mt-8 border-t border-white/5 text-center text-sm text-slate-500">
-            Relatório gerado automaticamente • Dados atualizados em 18 de Junho de 2026
+            Relatório gerado automaticamente • Dados atualizados em 25 de Junho de 2026
         </footer>
     </div>
 

@@ -8,7 +8,7 @@ def clean_float(val):
     except: return 0
 
 # Read criativo file for ad performance (Global top ads - keep for now if needed, though we will have dynamic below)
-df_criativo = pd.read_excel('data/DADOS-DO-CRIATIVO-07-04-até-18-04.xlsx')
+df_criativo = pd.read_excel('data/DIA-A-DIA-CRIATIVO-jun-1-2026-a-jun-25-2026.xlsx')
 ads = df_criativo[df_criativo['Anúncios'] != 'All'].dropna(subset=['Anúncios'])
 
 top_ads = []
@@ -24,16 +24,16 @@ for _, row in ads.iterrows():
 top_ads.sort(key=lambda x: x['revenue'], reverse=True)
 
 # Read DIA-A-DIA to get global totals AND daily data
-df_dia = pd.read_excel('data/DADOS-DE-DIA-A-DIA-07-04-até-18-06.xlsx', header=2)
+df_dia = pd.read_excel('data/DIA-A-DIA-NORMALjun-1-2026-a-jun-25-2026.xlsx', header=2)
 df_dia = df_dia[df_dia['Dia'] != 'All'].dropna(subset=['Dia'])
 df_dia['Date'] = pd.to_datetime(df_dia['Dia'], errors='coerce')
 df_dia = df_dia.dropna(subset=['Date']).sort_values('Date')
 
-total_spend = pd.to_numeric(df_dia['Valor usado (BRL)'], errors='coerce').sum()
-total_revenue = pd.to_numeric(df_dia['Valor dos resultados'], errors='coerce').sum()
-total_purchases_paid = pd.to_numeric(df_dia['Resultados'], errors='coerce').sum()
-total_impressions = pd.to_numeric(df_dia['Impressões'], errors='coerce').sum()
-total_clicks = pd.to_numeric(df_dia['Cliques no link'], errors='coerce').sum()
+total_spend = pd.to_numeric(df_dia['Valor usado (BRL)'], errors='coerce').sum() if 'Valor usado (BRL)' in df_dia.columns else 0.0
+total_revenue = pd.to_numeric(df_dia['Valor dos resultados'], errors='coerce').sum() if 'Valor dos resultados' in df_dia.columns else 0.0
+total_purchases_paid = pd.to_numeric(df_dia['Resultados'], errors='coerce').sum() if 'Resultados' in df_dia.columns else 0.0
+total_impressions = pd.to_numeric(df_dia['Impressões'], errors='coerce').sum() if 'Impressões' in df_dia.columns else 0.0
+total_clicks = pd.to_numeric(df_dia['Cliques no link'], errors='coerce').sum() if 'Cliques no link' in df_dia.columns else 0.0
 
 total_spend = float(total_spend) if not pd.isna(total_spend) else 0.0
 total_revenue = float(total_revenue) if not pd.isna(total_revenue) else 0.0
@@ -59,11 +59,11 @@ region_data = [
 # Process Diario
 daily_data = []
 for date_val, group in df_dia.groupby(df_dia['Date'].dt.date):
-    inv = float(group['Valor usado (BRL)'].sum())
-    fat = float(group['Valor dos resultados'].sum())
-    ven = int(group['Resultados'].sum())
-    imp = int(group['Impressões'].sum())
-    cli = int(group['Cliques no link'].sum())
+    inv = float(group['Valor usado (BRL)'].sum()) if 'Valor usado (BRL)' in group.columns else 0.0
+    fat = float(group['Valor dos resultados'].sum()) if 'Valor dos resultados' in group.columns else 0.0
+    ven = int(group['Resultados'].sum()) if 'Resultados' in group.columns else 0
+    imp = int(group['Impressões'].sum()) if 'Impressões' in group.columns else 0
+    cli = int(group['Cliques no link'].sum()) if 'Cliques no link' in group.columns else 0
     
     roas = round(fat / inv, 2) if inv > 0 else 0
     cpa = round(inv / ven, 2) if ven > 0 else 0
@@ -85,7 +85,7 @@ for date_val, group in df_dia.groupby(df_dia['Date'].dt.date):
 
 # Process Idade Daily
 try:
-    df_idade = pd.read_excel('data/DIA-A-DIA-COM-IDADE.xlsx', skiprows=2)
+    df_idade = pd.read_excel('data/DIA-A-DIA-IDADE-un-1-2026-a-jun-25-2026.xlsx', skiprows=2)
     idade_cols = df_idade.columns
     i_ven = [c for c in idade_cols if 'Resultados' in str(c) and 'Tipo' not in str(c) and 'ROAS' not in str(c) and 'Custo' not in str(c) and c != 'Resultados (iniciais)']
     col_vendas_idade = i_ven[0] if i_ven else 'Resultados'
@@ -114,7 +114,7 @@ except Exception as e:
 
 # Process Posicionamento Daily
 try:
-    df_pos = pd.read_excel('data/POSICIONAMENTO DIA A DIA.xlsx', skiprows=2)
+    df_pos = pd.read_excel('data/DIA-A-DIA-POSICIONAMENTO-jun-1-2026-a-jun-25-2026.xlsx', skiprows=2)
     pos_cols = df_pos.columns
     p_ven = [c for c in pos_cols if 'Resultados' in str(c) and 'Tipo' not in str(c) and 'ROAS' not in str(c) and 'Custo' not in str(c) and c != 'Resultados (iniciais)']
     col_vendas_pos = p_ven[0] if p_ven else 'Resultados'
@@ -142,7 +142,7 @@ except Exception as e:
 
 # Process Criativo Daily
 try:
-    df_criativo_diario = pd.read_excel('data/CRIATIVO-DIA-A-DIA.xlsx')
+    df_criativo_diario = pd.read_excel('data/DIA-A-DIA-CRIATIVO-jun-1-2026-a-jun-25-2026.xlsx')
     criativo_diario_cols = df_criativo_diario.columns
     
     col_cria = [c for c in criativo_diario_cols if 'Anúncio' in str(c) or 'Anuncio' in str(c) or 'Anncio' in str(c)]
